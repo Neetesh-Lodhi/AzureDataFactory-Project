@@ -1,0 +1,9 @@
+{
+	"name": "neeteshdatafactoryproject",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "02c85c58-615e-409a-812f-f31e61348793",
+		"tenantId": "ca7fa24e-b43a-4747-849f-921c769e6259"
+	}
+}

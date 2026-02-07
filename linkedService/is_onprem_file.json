@@ -1,0 +1,17 @@
+{
+	"name": "is_onprem_file",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "C:\\ADF_Project",
+			"userId": ".\\NeeteshLodhi",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIxNDBmYmEzMi04NDE4LTQ1YzEtYmEzNC0yZmIwNmYzMmEwYzAiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "neetesh-selfhosted",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
