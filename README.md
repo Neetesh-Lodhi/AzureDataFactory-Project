@@ -4,13 +4,9 @@ Azure Data Factory End-To-End Project | PySpark | Azure Data Migration | Medalli
 🚀 Azure Data Factory – End-to-End Data Engineering Project
 
 This repository demonstrates a production-style Azure Data Factory (ADF) data engineering workflow built using Medallion Architecture (Bronze → Silver → Gold).
-
 The project covers data ingestion, orchestration, transformation, ranking, automation, Git integration, and alerting, simulating real-world enterprise pipelines used in modern lakehouse platforms like Azure + Microsoft Fabric.
-
 🏗️ Architecture Overview
-
 The solution follows the Medallion Architecture pattern:
-
 Sources → Bronze → Silver → Gold → Business Views
 
 Layer	Purpose
@@ -21,7 +17,6 @@ Layer	Purpose
 ADF acts as the orchestrator, handling ingestion, transformation, scheduling, monitoring, and alerts.
 
 ⚙️ Core Features
-
 ✅ On-Prem File Ingestion using Self-Hosted Integration Runtime
 ✅ REST API Ingestion using HTTP Connector
 ✅ Incremental SQL Load without watermark tables
@@ -35,55 +30,35 @@ ADF acts as the orchestrator, handling ingestion, transformation, scheduling, mo
 ✅ Git Integration using Azure DevOps / GitHub
 
 🧱 Azure Components Used
-
 Azure Data Factory
-
 Azure Data Lake Storage Gen2
-
 Azure SQL Database
-
 Self-Hosted Integration Runtime
-
 Logic Apps
-
 Azure DevOps / GitHub
-
 Delta Lake
-
 Mapping Data Flows
 
 🔗 Linked Services
-
 Linked Services define connections to sources and sinks.
-
 Examples used:
-
 File System (On-Prem)
-
 HTTP (REST API / GitHub JSON)
-
 Azure SQL Database
-
 Azure Data Lake Storage Gen2
-
 Without linked services, ADF cannot communicate with external systems.
 
 ⚡ Integration Runtimes
 Type	Usage
 AutoResolve IR	Azure-to-Azure data movement
 Self-Hosted IR	On-Prem files and private network access
-
 Self-Hosted IR bridges ADF with local machines using local CPU and memory.
-
 📥 Data Ingestion
 🗂️ On-Prem Files
 
 Source: Local CSV / JSON files
-
 Target: ADLS Gen2 (Bronze Layer)
-
 Dynamic file ingestion using pipeline parameters
-
 Parallel execution using ForEach
 
 [
@@ -94,25 +69,15 @@ Parallel execution using ForEach
 🌐 REST API
 
 HTTP Linked Service
-
 GitHub raw JSON ingestion
-
 Copy Activity to Bronze ADLS
-
 Example:
-
 https://raw.githubusercontent.com/.../dim_airport.json
-
 🗄️ Incremental SQL Load
-
 Modern incremental approach without watermark tables:
-
 Lookup last load from JSON
-
 Query new records
-
 Copy to Bronze
-
 Update last_load.json automatically
 
 SELECT *
