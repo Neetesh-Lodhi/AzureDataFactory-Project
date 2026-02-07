@@ -1,62 +1,80 @@
 # AzureDataFactory-Project
 Azure Data Factory End-To-End Project | PySpark | Azure Data Migration | Medallion Architecture | Azure DevOps For Data Engineers
 
- 🚀 Azure Data Factory – End-to-End Data Engineering Project
+# 🚀 Azure Data Factory – End-to-End Data Engineering Project
 
-![Azure](https://img.shields.io/badge/azure-%230072C6.svg?style=for-the-badge&logo=microsoftazure&logoColor=white)
-![Azure Data Factory](https://img.shields.io/badge/Data%20Factory-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white)
-![Azure SQL](https://img.shields.io/badge/Azure%20SQL-0056D2?style=for-the-badge&logo=microsoft-sql-server&logoColor=white)
-![Spark](https://img.shields.io/badge/Spark-E25A1C?style=for-the-badge&logo=apache-spark&logoColor=white)
+![Azure](https://img.shields.io/badge/Cloud-Azure-0078D4?logo=microsoft-azure&logoColor=white)
+![ADF](https://img.shields.io/badge/Data%20Factory-Orchestration-0078D4?logo=microsoft-azure&logoColor=white)
+![Spark](https://img.shields.io/badge/Transformation-Spark%20%2F%20Data%20Flows-E25A1C?logo=apache-spark&logoColor=white)
+![SQL](https://img.shields.io/badge/Database-Azure%20SQL-0056D2?logo=microsoft-sql-server&logoColor=white)
 
-This repository demonstrates a **production-style Azure Data Factory (ADF) data engineering workflow** built using the **Medallion Architecture** (Bronze → Silver → Gold).
+This repository demonstrates a **production-ready** data engineering pipeline using **Azure Data Factory (ADF)**. The project implements a **Medallion Architecture** (Bronze → Silver → Gold) to ingest, clean, and analyze data from multiple sources.
 
-The project simulates real-world enterprise pipelines found in modern lakehouse platforms (Azure + Microsoft Fabric), covering data ingestion, orchestration, transformation, ranking, automation, Git integration, and alerting.
+It simulates a real-world enterprise scenario including **Self-Hosted Integration Runtimes**, **Incremental Loading**, and **Logic App Alerting**.
 
 ---
 
 ## 🏗️ Architecture Overview
 
-The solution follows the **Medallion Architecture** pattern where ADF acts as the primary orchestrator.
+The solution follows the Lakehouse pattern using the **Medallion Architecture**:
 
-| Layer | Purpose | Tech |
-| :--- | :--- | :--- |
-| **🥉 Bronze** | Raw ingestion from On-Prem, REST API, & Azure SQL. | ADLS Gen2 (Parquet/JSON) |
-| **🥈 Silver** | Cleaned, transformed data with Delta Upserts. | Mapping Data Flows (Spark) |
-| **🥇 Gold** | Aggregated business views with ranking & analytics. | Delta Lake (Overwrite) |
+**1. 🥉 Bronze Layer (Raw):** Direct ingestion from On-Prem files, REST APIs, and SQL (Parquet/JSON).
+**2. 🥈 Silver Layer (Clean):** Transformed data with Delta Upserts using Mapping Data Flows.
+**3. 🥇 Gold Layer (Curated):** Aggregated business views with Ranking metrics ready for reporting.
 
-### 📌 High-Level Data Flow
-```mermaid
-graph LR
-    A[On-Prem Files] -->|Self-Hosted IR| B(Bronze Layer)
-    C[REST API] -->|HTTP Connector| B
-    D[Azure SQL] -->|Incremental Load| B
-    B -->|Clean & Upsert| E(Silver Layer)
-    E -->|Aggregate & Rank| F(Gold Layer)
-    F -->|Power BI / Reporting| G[Business Views]
-⚙️ Core Features✅ Hybrid Ingestion: On-Prem File Ingestion using Self-Hosted Integration Runtime.✅ API Integration: REST API Ingestion using HTTP Connector (GitHub raw JSON).✅ Smart SQL Loading: Incremental SQL Load without traditional watermark tables.✅ Dynamic Orchestration: Parent-Child Pipelines using ForEach loops and Parameter passing.✅ Enterprise Alerting: Failure monitoring via Logic Apps + Email.✅ Spark Power: Transformations using Mapping Data Flows (Spark under the hood).✅ Advanced Analytics: Ranking metrics using Dense Rank Window Functions.✅ CI/CD: Git Integration via Azure DevOps / GitHub.🧱 Azure Components UsedAzure Data Factory: Pipeline orchestration and monitoring.Azure Data Lake Storage Gen2: Storage for Bronze, Silver, and Gold layers.Azure SQL Database: Source system for transactional data.Self-Hosted Integration Runtime: Bridge for local/private network access.Logic Apps: Serverless workflow for email alerts.Mapping Data Flows: Visual data transformation (running on Spark clusters).📥 Data Ingestion Strategy1. On-Prem Files (Self-Hosted IR)Source: Local CSV/JSON files.Target: ADLS Gen2 (Bronze).Mechanism: Used Self-Hosted IR to bridge ADF with local machines using local CPU/Memory.Dynamic Loading: Utilized pipeline parameters to load files in parallel.JSON// Example Parameter Array for ForEach Activity
+### 📌 Data Flow Diagram
+> **Source Systems** (On-Prem, API, SQL)  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⬇️ *Ingestion (Copy Activity)* > **Bronze Layer** (ADLS Gen2)  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⬇️ *Transformation (Spark Data Flows)* > **Silver Layer** (Delta Upsert)  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⬇️ *Aggregation (Window Functions)* > **Gold Layer** (Business Views)
+
+---
+
+## ⚙️ Key Features
+
+* **Hybrid Ingestion:** Securely moves data from local On-Prem machines to Cloud using **Self-Hosted Integration Runtime**.
+* **API Integration:** Ingests complex JSON data via REST API (HTTP Connector).
+* **Incremental SQL Loading:** Implements high-performance incremental loads **without** using legacy watermark tables.
+* **Dynamic Pipelines:** Uses `ForEach` loops and Parameterization for reusable, metadata-driven pipelines.
+* **Automated Alerting:** Integrates with **Logic Apps** to send email notifications upon pipeline failure.
+* **Advanced Analytics:** Uses `Dense Rank` window functions for business ranking logic.
+* **CI/CD:** Fully integrated with Git (Azure DevOps / GitHub) for version control.
+
+---
+
+## 🧱 Tech Stack
+
+| Component | Usage |
+| :--- | :--- |
+| **Azure Data Factory** | Primary Orchestration & Scheduling |
+| **Azure Data Lake Gen2** | Storage for Bronze, Silver, and Gold layers |
+| **Mapping Data Flows** | Low-code Spark transformations |
+| **Azure SQL Database** | Source for transactional data |
+| **Logic Apps** | Serverless workflow for Email Alerts |
+| **Self-Hosted IR** | Bridge for private network/local file access |
+
+---
+
+## 📥 Data Ingestion Strategy
+
+### 1. On-Premise Files
+* **Source:** Local CSV/JSON files.
+* **Technique:** Self-Hosted Integration Runtime (IR) installed on a local VM.
+* **Logic:** Dynamic file selection using pipeline parameters.
+
+```json
+/* Example Parameter passed to Pipeline */
 [
   {"filename": "dim_passenger.csv"},
   {"filename": "dim_flight.csv"}
 ]
-2. REST API (HTTP)Ingests raw JSON from GitHub via the HTTP Linked Service.Copies data directly to the Bronze container.3. Incremental SQL Load (No Watermark Table)A modern approach to incremental loading without maintaining a separate watermark table in the database.Lookup: Check the last_load timestamp from a JSON file in storage.Query: Select only new records from the source.Update: Refresh last_load.json automatically after success.SQL-- Query used in Copy Activity
+2. REST API (GitHub JSON)Source: Raw JSON data from GitHub via HTTP connector.Technique: Copy Activity to Sink (ADLS Bronze).3. Smart Incremental SQL LoadInstead of maintaining a complex watermark table in the database, the pipeline:Lookups the last_load_date from a JSON file in ADLS.Queries only new records.Updates the JSON file upon success.SQL-- Dynamic Query in ADF Copy Activity
 SELECT * FROM dbo.fact_bookings 
 WHERE booking_date > '@{activity('Lookup_last_load').output.firstRow.last_load}'
-🔧 Transformations (Silver & Gold)Transformations are handled by Mapping Data Flows, providing the power of Spark clusters without writing Scala/Python code.🥈 Silver Layer (Delta Upsert)Operations: Derived Columns, Select/Rename, Cast, and Filter.Write Mode: Upsert (Update if exists, Insert if new) to handle evolving schemas and data changes.🥇 Gold Layer (Aggregation & Ranking)Operations: Joins (Fact + Dimensions), Aggregation (Revenue), and Window Functions.Write Mode: Overwrite (Ensures freshness for reporting views).Ranking LogicUsed dense_rank() to calculate "Top Airlines by Revenue".FunctionBehaviorUse Caserank()Skips numbers after ties (1, 1, 3)Olympic Medalsdense_rank()No gaps in ranking (1, 1, 2)Business Reporting🔄 Orchestration & MonitoringParent-Child PipelinesThe Parent pipeline executes child pipelines (Ingestion, SQL Load, Processing) ensuring modularity. Parameters are passed dynamically to avoid string-conversion bugs.JSON// Passing array parameters to child pipeline
-@pipeline().parameters.files
-🚨 Alerting with Logic AppsADF Web Activity triggers a Logic App via HTTP POST on pipeline failure.Payload Example:JSON{
+🔧 Transformation Logic (Silver & Gold)Transformations are performed using Mapping Data Flows (running on Spark clusters).🥈 Silver LayerGoal: Clean and Normalize.Method: Delta Upsert (Update if row exists, Insert if new).Steps: Derived Columns -> Cast Types -> Filter -> Upsert.🥇 Gold LayerGoal: Business Aggregation.Method: Overwrite (Ensures reporting data is always fresh).Ranking Logic: Used dense_rank() to handle "Top Airlines by Revenue" to avoid gaps in numbering.FunctionOutput ExampleWhy we used it?rank()1, 1, 3, 4Skips numbers after ties.dense_rank()1, 1, 2, 3Best for business reporting (No gaps).🔄 Orchestration & MonitoringParent-Child Pipeline PatternThe master pipeline acts as a controller, triggering child pipelines for Ingestion, Processing, and Loading. This ensures:Better Error Handling.Modular Design.Easy Debugging.🚨 Alerting SystemIf a pipeline fails, ADF triggers a Web Activity that calls a Logic App webhook.Payload sent to Logic App:JSON{
   "pipeline_name": "@pipeline().Pipeline",
   "run_id": "@pipeline().RunId",
-  "status": "@activity('execute_incremental').output.status",
-  "error": "@activity('execute_incremental').error.message"
+  "status": "Failed",
+  "error": "@activity('Execute Pipeline').error.message"
 }
-🧠 Key Learnings"ADF is an orchestrator, not a processor."Mapping Data Flows utilize Spark internally, abstracting the complexity of cluster management.Delta Lake format is essential for performance and handling schema evolution (Upserts).Parent-Child Hierarchies significantly simplify debugging and maintenance.Dense Rank is preferred over standard Rank for business views to avoid confusing gaps in reporting.Git Integration is mandatory for any team-scale ADF project to handle versioning and CI/CD.Created by [Your Name]
-### How to use this:
-
-1.  Go to your GitHub repository.
-2.  Click on the `README.md` file (or create one).
-3.  Click the **Pencil icon** (Edit).
-4.  Paste the code above.
-5.  **(Optional but recommended):** I added a `mermaid` diagram code block in the Architecture section. GitHub renders this automatically as a flow chart. It will look very impressive!
-6.  Commit changes.
-
-Would you like me to help you write a "How to Run" section for users who might want to clo
+🧠 Key LearningsADF is an Orchestrator: Heavy transformations should be delegated to Data Flows (Spark) or Databricks, not done inside the control flow.Parameterization: Hard-coding values is a bad practice. Always use pipeline parameters for flexibility.Git Integration: Essential for saving work, version history, and collaboration.Schema Evolution: Using Delta format allows the schema to evolve over time without breaking pipelines.Project maintained by [Your Name]
